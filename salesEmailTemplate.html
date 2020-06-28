@@ -1,0 +1,55 @@
+<html>
+
+<head>
+  <style>
+    th {
+      height: 30px;
+      background-color: cornflowerblue;
+      color: #fff;
+      letter-spacing: 3px;
+    }
+
+    td {
+      padding-left: 5px;
+      padding-right: 5px;
+      text-align: center;
+      font-size: 16px;
+      border: 1px solid cornflowerblue;
+    }
+  </style>
+</head>
+
+<body>
+  <div>シートURL：<?= spreadsheetUrl?></div>
+  <div>
+    <table>
+      <tr>
+        <th>ブランド</th>
+        <th>当月総合売上</th>
+        <th>当月総合原価</th>
+        <th>当月利益率</th>
+        <th>当月棚卸</th>
+        <th>前月総合売上</th>
+        <th>前月棚卸</th>
+        <th>売上昨月対比</th>
+        <th>棚卸昨月対比</th>
+      </tr>
+
+      <? items.forEach(item => {  ?>
+      <tr>
+        <td><?= item.branch?></td>
+        <td><?= item.sales?></td>
+        <td><?= item.cost?></td>
+        <td><?= item.margin?></td>
+        <td><?= item.stock?></td>
+        <td><?= item.lastMonthSales?></td>
+        <td><?= item.lastMonthStock?></td>
+        <td><?= item.salesTrend?></td>
+        <td><?= item.stockTrend?></td>
+      </tr>
+      <? }) ?>
+    </table>
+  </div>
+</body>
+
+</html>

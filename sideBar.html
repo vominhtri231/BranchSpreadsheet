@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+</head>
+
+<body>
+  <style>
+    #content {
+      padding: 6px 6px;
+    }
+
+    #uploadButton {
+      margin-top: 10px;
+    }
+  </style>
+
+  <div id="content">
+    <input id="fileUploader" type="file" />
+    <button id="uploadButton" onclick="handleUpload()">Upload</button>
+  </div>
+
+  <?!= HtmlService.createHtmlOutputFromFile("sideBar-js").getContent(); ?>
+</body>
+
+</html>

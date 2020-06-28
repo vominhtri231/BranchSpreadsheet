@@ -1,0 +1,67 @@
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/xlsx.full.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/jszip.js"></script>
+<script>
+  function handleUpload() {
+    const fileUploader = document.getElementById("fileUploader");
+    const uploadedFiles = fileUploader.files;
+    if (uploadedFiles.length < 1) {
+      return;
+    }
+    hanldeUploadExcel(uploadedFiles[0]);
+  }
+
+  function hanldeUploadExcel(file) {
+    // set up file reader
+    const reader = new FileReader();
+    reader.onload = e => {
+      const result = e.target.result;
+      const workbook = XLSX.read(result, {
+        type: 'binary'
+      });
+
+      const stockSalesSheet = workbook.Sheets['棚卸額'];
+      if (typeof stockSalesSheet !== undefined) {
+        const rows = XLSX.utils.sheet_to_row_object_array(stockSalesSheet);
+        google.script.run.onSubmit(convertToBranchMap(rows));
+      }
+    };
+    reader.onerror = function (ex) {
+      console.log(ex);
+    };
+    reader.readAsBinaryString(file);
+  }
+
+  function convertToBranchMap(rows) {
+    const stocks = rows
+      .map(row => ({
+        productCode: row['商品コード'],
+        stock: row['棚卸額']
+      }))
+      .filter(item => item.productCode && item.stock)
+      .reduce((acc, current) => {
+        const branch = getBranch(current.productCode);
+        acc[branch] = acc[branch] || { stock: 0, sales: 0, cost: 0 };
+        acc[branch].stock = acc[branch].stock + Number(current.stock);
+        return acc;
+      }, {});
+
+    return rows
+      .map(row => ({
+        productCode: row['商品コード_1'],
+        sales: row['小計金額'],
+        cost: row['総合原価_genka_tnk*org15*org16*org17*(受注数)/100'],
+      }))
+      .filter(item => !!item.productCode)
+      .reduce((acc, current) => {
+        const branch = getBranch(current.productCode);
+        acc[branch] = acc[branch] || { stock: 0, sales: 0, cost: 0 };
+        acc[branch].sales = acc[branch].sales + Number(current.sales);
+        acc[branch].cost = acc[branch].cost + Number(current.cost);
+        return acc;
+      }, stocks);
+  }
+
+  function getBranch(productCode) {
+    return productCode.split('-')[0];
+  }
+</script>
