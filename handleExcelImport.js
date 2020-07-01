@@ -86,18 +86,22 @@ function getSavingValues(items) {
       [item.branch, , item.sales, item.cost, ,
       item.stock, item.lastMonthSales, item.lastMonthStocks, '', ''];
 
-    const margin = calculatePercentage(item.sales, item.cost);
-    if (!!margin) {
+    const margin = calculatePercentage(item.sales - item.cost, item.cost);
+    if (margin) {
       row[4] = margin;
     }
 
+    
     const salesTrend = calculatePercentage(item.sales, item.lastMonthSales);
-    if (!!salesTrend) {
+    Logger.log(item.sale, item.lastMonthSales, salesTrend);
+    if (salesTrend) {
       row[8] = salesTrend;
     }
 
+    
     const stockTrend = calculatePercentage(item.stock, item.lastMonthStocks);
-    if (!!stockTrend) {
+    Logger.log(item.stock, item.lastMonthStocks, stockTrend);
+    if (stockTrend) {
       row[9] = stockTrend;
     }
 
@@ -110,6 +114,7 @@ function calculatePercentage(numerator, denominator) {
     return;
   }
   return numerator / denominator;
+  return Math.round(((numerator / denominator) + Number.EPSILON) * 100) / 100;
 }
 
 function saveNewRows(sheet, savingValues) {
